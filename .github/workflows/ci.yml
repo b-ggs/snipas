@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Snipas
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      # CI has no signing certificate: build unsigned-but-ad-hoc so the app still launches locally.
+      - name: Build
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -scheme Snipas \
+            -configuration Release \
+            -destination 'platform=macOS' \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY=- \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM= \
+            | tee build.log | grep -E '(error|warning: .*Snipas/|BUILD (SUCCEEDED|FAILED))' || true
+          grep -q 'BUILD SUCCEEDED' build.log
+
+      - name: Package app
+        run: |
+          ditto -c -k --keepParent build/Build/Products/Release/Snipas.app Snipas.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Snipas-${{ github.sha }}
+          path: Snipas.zip
+          retention-days: 14
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-${{ github.sha }}
+          path: build.log

@@ -1,0 +1,51 @@
+name: Snipas
+options:
+  bundleIdPrefix: xyz.boggs
+  deploymentTarget:
+    macOS: "15.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    DEVELOPMENT_TEAM: F8Q6UYMF4S
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "Apple Development"
+    ENABLE_HARDENED_RUNTIME: YES
+targets:
+  Snipas:
+    type: application
+    platform: macOS
+    sources: [Snipas]
+    info:
+      path: Snipas/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: Snipas
+        CFBundleShortVersionString: "0.1.0"
+        CFBundleVersion: "1"
+        LSUIElement: true
+        LSApplicationCategoryType: public.app-category.productivity
+    entitlements:
+      path: Snipas/Resources/Snipas.entitlements
+      properties:
+        com.apple.security.app-sandbox: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: xyz.boggs.snipas
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""
+  SnipasTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources: [SnipasTests]
+    dependencies:
+      - target: Snipas
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  Snipas:
+    build:
+      targets:
+        Snipas: all
+        SnipasTests: [test]
+    test:
+      targets: [SnipasTests]
