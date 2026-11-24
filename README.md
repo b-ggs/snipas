@@ -28,3 +28,35 @@ Grant **Screen Recording** (required) and **Accessibility** (recommended) on fir
 - Translation is **text-only** by default. **Use image** in the status bar re-runs the selection with its screenshot. The model gets each line's position, returns the exact source text (fixing misreads), and adds text the recognizer missed. Those added boxes are snapped onto the text and drawn with a dashed outline. If the recognizer found nothing at all, it reads the whole image instead.
 - Claude calls run with `--safe-mode --strict-mcp-config --tools "" --system-prompt …` so each call carries only the prompt (~$0.0003 with haiku) instead of your full Claude Code context.
 - Codex runs `codex exec --ephemeral --sandbox read-only --output-schema …` with low reasoning effort.
+
+## How it works
+
+### Capture → overlay
+```mermaid
+flowchart TD
+    A["Snip a region, or Translate All Screens"] --> B["Screenshot<br/>ScreenCaptureKit"]
+    A --> C["On-screen text strings<br/>macOS Accessibility API"]
+    B --> D["Text recognition<br/>Apple Vision OCR"]
+    D --> E["Swap OCR guesses for exact strings<br/>fuzzy match against Accessibility text"]
+    C --> E
+    E --> F["Group lines into blocks"]
+    F --> G{"Already in target language?<br/>NSSpellChecker / NaturalLanguage"}
+    G -- yes --> H["Skip"]
+    G -- no --> I["Sample text and background colors<br/>from the screenshot pixels"]
+    I --> J["Translate<br/>claude or codex CLI, text only"]
+    J --> K["Overlay windows<br/>AppKit NSPanel per block, drawn in matching colors"]
+```
+
+### “Use image”: sending the screenshot to Claude Code or Codex
+```mermaid
+flowchart TD
+    A["Use image button"] --> B["Selection screenshot as PNG<br/>+ OCR text with box positions"]
+    B --> C{"Engine"}
+    C -- "Claude Code" --> D["claude -p<br/>image sent as base64 in stream-json"]
+    C -- Codex --> E["codex exec -i<br/>image passed as a temp file"]
+    D --> F["JSON reply<br/>exact source text, translations,<br/>and text OCR missed with rough boxes"]
+    E --> F
+    F --> G["Update existing overlays"]
+    F --> H["Tighten boxes for missed text<br/>re-run Apple Vision OCR on a crop,<br/>else detect text pixels against the background"]
+    H --> I["Add overlays with a dashed outline"]
+```
