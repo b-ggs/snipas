@@ -4,7 +4,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.target) private var target = "en"
     @AppStorage(SettingsKey.sources) private var sources = "lt"
     @AppStorage(SettingsKey.engine) private var engine = Engine.claude.rawValue
-    @AppStorage(SettingsKey.claudeModel) private var claudeModel = "haiku"
+    @AppStorage(SettingsKey.claudeModel) private var claudeModel = "sonnet"
     @AppStorage(SettingsKey.codexModel) private var codexModel = ""
     @AppStorage(SettingsKey.claudePath) private var claudePath = ""
     @AppStorage(SettingsKey.codexPath) private var codexPath = ""

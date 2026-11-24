@@ -318,7 +318,7 @@ final class EngineIntegrationTests: XCTestCase {
         XCTAssertEqual(assist.language, "Lithuanian")
     }
 
-    func testClaude() async throws { try await check(ClaudeCLITranslator(pathOverride: "", model: "haiku", timeout: 120)) }
+    func testClaude() async throws { try await check(ClaudeCLITranslator(pathOverride: "", model: "sonnet", timeout: 120)) }
     func testCodex() async throws { try await check(CodexCLITranslator(pathOverride: "", model: "", timeout: 180)) }
 }
 

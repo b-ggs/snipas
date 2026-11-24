@@ -26,7 +26,7 @@ Grant **Screen Recording** (required) and **Accessibility** (recommended) on fir
 - **Likely source languages** (Settings, default Lithuanian) steer OCR and tell the model to assume that language when text is ambiguous. Vision has no Lithuanian recognizer, so OCR uses Czech/Polish glyph sets with language correction off, and the model restores diacritics.
 - **Status bar** under the selection stays up while translations are shown: `Lithuanian → English · 4 translated · Claude Code` (the source language is reported by the model). It has a **✕** button (or press Esc) to dismiss.
 - Translation is **text-only** by default. **Use image** in the status bar re-runs the selection with its screenshot. The model gets each line's position, returns the exact source text (fixing misreads), and adds text the recognizer missed. Those added boxes are snapped onto the text and drawn with a dashed outline. If the recognizer found nothing at all, it reads the whole image instead.
-- Claude calls run with `--safe-mode --strict-mcp-config --tools "" --system-prompt …` so each call carries only the prompt (~$0.0003 with haiku) instead of your full Claude Code context.
+- Claude calls run with `--safe-mode --strict-mcp-config --tools "" --system-prompt …` so each call carries only the prompt (about a cent per call with Sonnet, the default model) instead of your full Claude Code context.
 - Codex runs `codex exec --ephemeral --sandbox read-only --output-schema …` with low reasoning effort.
 
 ## How it works

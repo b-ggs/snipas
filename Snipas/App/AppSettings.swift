@@ -45,7 +45,7 @@ enum SettingsKey {
             target: "en",
             sources: "lt",
             engine: Engine.claude.rawValue,
-            claudeModel: "haiku",
+            claudeModel: "sonnet",
             codexModel: "",
             claudePath: "",
             codexPath: "",
